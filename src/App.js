@@ -1,9 +1,12 @@
 import { React } from 'react';
 import './App.scss';
+import Score from './components/score';
+import Cards from './components/cards';
 
-const App = () =>
+const App = (context) =>
 	<div className="App" role="App">
-		Ready to start.
+		<Score { ...context }/>
+		<Cards { ...context }/>
 	</div>;
 
 export default App;
