@@ -21,12 +21,15 @@ const manageSelectedCards = (context) => ({
 	cards: cardManager.checkCards(context),
 });
 
+const restart = ({ seed }) => seed;
+
 const actions = {
 	openCard,
 	selectCard,
 	computeScore,
 	computeLife,
 	manageSelectedCards,
+	restart,
 };
 
 export default actions;
