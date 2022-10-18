@@ -59,7 +59,7 @@ const cardManager = {
 			: cardManager.isSame(context)
 				? cards.map((card) => (card.id === selectedCards[0].id
 				|| card.id === selectedCards[1].id
-					? { ...card, disable: true }
+					? { ...card, isDisabled: true }
 					: card))
 				: cards.map((card) => (card.id === selectedCards[0].id
 					|| card.id === selectedCards[1].id
@@ -74,6 +74,9 @@ const cardManager = {
 			? selectedCards
 			: selectedCards.slice(0, selectedCards.length - two);
 	},
+
+	isAllDisabled: ({ state: { cards }}) =>
+		cards.every((card) => card.isDisabled),
 
 };
 
