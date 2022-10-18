@@ -32,6 +32,7 @@ const seed = {
 		disable: false,
 	}],
 	time: 10,
+	selectedCards: [],
 };
 
 export default seed;

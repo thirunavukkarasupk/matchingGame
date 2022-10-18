@@ -6,7 +6,14 @@ const Card = (context) => {
 
 	return (
 		<button
-			onClick={ () => actions.openCard(data) }
+			disabled={ data.disable }
+			onClick={ () => {
+				actions.openCard(data);
+				actions.selectCard(data);
+				actions.computeScore();
+				actions.computeLife();
+				actions.manageSelectedCards(data);
+			} }
 		>{cardManager.flipCard(context)}
 		</button>);
 };
