@@ -6,7 +6,7 @@ const Card = (context) => {
 
 	return (
 		<button
-			disabled={ data.disable }
+			disabled={ data.isDisabled }
 			onClick={ () => {
 				actions.openCard(data);
 				actions.selectCard(data);
