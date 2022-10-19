@@ -12,9 +12,9 @@ const Card = (context) => {
 				actions.selectCard(data);
 				actions.computeScore();
 				actions.computeLife();
-				actions.manageSelectedCards(data);
+				actions.manageCards(data);
 			} }
-		>{cardManager.flipCard(context)}
+		>{cardManager.getCard(context)}
 		</button>);
 };
 

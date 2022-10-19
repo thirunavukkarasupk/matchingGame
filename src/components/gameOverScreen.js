@@ -4,7 +4,7 @@ import Restart from './restart';
 const GameOverScreen = (context) =>
 
 	<div>
-		<div>GameOver.wanna play again?</div>
+		<div>Game Over. Wanna play again?</div>
 		<div><Restart { ...context }/> </div>
 	</div>;
 

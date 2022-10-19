@@ -1,5 +1,5 @@
 const PlayerManager = {
-	hasLife: ({ state: { life }}) => life !== 0,
+	hasLife: ({ state: { life }}) => life > 0,
 
 };
 

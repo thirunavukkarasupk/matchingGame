@@ -1,44 +1,42 @@
+import { rndString } from '@laufire/utils/random';
+
 const two = 2;
 
 const cardManager = {
 	openCard: ({ state: { cards }, data }) =>
 		cards.map((card) => (card.id === data.id
-			? { ...data, isOpen: true }
+			? { ...data, isOpen: true, isDisabled: true }
 			: card)),
 
 	selectCard: ({ state: { selectedCards }, data }) =>
 		[...selectedCards, data],
 
-	flipCard: ({ config: { backImage }, data: { isOpen, image }}) =>
+	getCard: ({ config: { backImage }, data: { isOpen, image }}) =>
 		(isOpen ? image : backImage),
 
-	isPossible: ({ state: { selectedCards }}) =>
+	isMatchPossible: ({ state: { selectedCards }}) =>
 		selectedCards.length % two === 0,
 
-	isSame: ({ state: { selectedCards }}) => {
-		const { length } = selectedCards;
+	isMatch: ({ state: { selectedCards }}) => {
+		const [cardOne,
+			cardTwo = { name: 'default', id: rndString() }] = selectedCards;
 
-		return (
-			selectedCards[length - 1].name === selectedCards[length - two].name
-		&& selectedCards[length - 1].id !== selectedCards[length - two].id);
+		return cardOne.name === cardTwo.name;
 	},
 
-	addPoints: (context) => {
-		const { state: { selectedCards, score },
-			config: { cardScore }} = context;
+	getPoints: (context) => {
+		const { state: { selectedCards }, config: { cardScore }} = context;
+		const [{ name: cardName }] = selectedCards;
 
-		return cardManager.isSame(context)
-			? score + (two
-				* cardScore[selectedCards[selectedCards.length - 1].name])
-			: score;
+		return cardManager.isMatch(context)
+			? cardScore[cardName]
+			: 0;
 	},
 
 	computeScore: (context) => {
 		const { state: { score }} = context;
 
-		return cardManager.isPossible(context)
-			? cardManager.addPoints(context)
-			: score;
+		return score + cardManager.getPoints(context);
 	},
 
 	computeLife: (context) => {
@@ -46,33 +44,32 @@ const cardManager = {
 
 		return !cardManager.isPossible(context)
 			? life
-			: cardManager.isSame(context)
+			: cardManager.isMatch(context)
 				? life
 				: life - 1;
 	},
 
-	checkCards: (context) => {
+	manageCards: (context) => {
 		const { state: { cards, selectedCards }} = context;
+		const [cardOne,
+			cardTwo = { id: rndString(), name: 'default' }] = selectedCards;
 
-		return !cardManager.isPossible(context)
+		return !cardManager.isMatchPossible(context)
 			? cards
-			: cardManager.isSame(context)
-				? cards.map((card) => (card.id === selectedCards[0].id
-				|| card.id === selectedCards[1].id
-					? { ...card, isDisabled: true }
-					: card))
-				: cards.map((card) => (card.id === selectedCards[0].id
-					|| card.id === selectedCards[1].id
-					? { ...card, isOpen: false }
+			: cardManager.isMatch(context)
+				? cards
+				: cards.map((card) => (card.id === cardOne.id
+					|| card.id === cardTwo.id
+					? { ...card, isOpen: false, isDisabled: false }
 					: card));
 	},
 
 	manageSelectedCards: (context) => {
 		const { state: { selectedCards }} = context;
 
-		return !cardManager.isPossible(context)
-			? selectedCards
-			: selectedCards.slice(0, selectedCards.length - two);
+		return cardManager.isMatchPossible(context)
+			? []
+			: selectedCards;
 	},
 
 	isAllDisabled: ({ state: { cards }}) =>

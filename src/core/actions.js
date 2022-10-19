@@ -16,9 +16,9 @@ const computeLife = (context) => ({
 	life: cardManager.computeLife(context),
 });
 
-const manageSelectedCards = (context) => ({
+const manageCards = (context) => ({
 	selectedCards: cardManager.manageSelectedCards(context),
-	cards: cardManager.checkCards(context),
+	cards: cardManager.manageCards(context),
 });
 
 const restart = ({ seed }) => seed;
@@ -28,7 +28,7 @@ const actions = {
 	selectCard,
 	computeScore,
 	computeLife,
-	manageSelectedCards,
+	manageCards,
 	restart,
 };
 
