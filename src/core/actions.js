@@ -1,4 +1,5 @@
 import cardManager from '../services/cardManager';
+import TimeManager from '../services/timeManager';
 
 const openCard = (context) => ({
 	cards: cardManager.openCard(context),
@@ -23,6 +24,10 @@ const manageCards = (context) => ({
 
 const restart = ({ seed }) => seed;
 
+const manageTime = (context) => ({
+	time: TimeManager.decreaseTime(context),
+});
+
 const actions = {
 	openCard,
 	selectCard,
@@ -30,6 +35,7 @@ const actions = {
 	computeLife,
 	manageCards,
 	restart,
+	manageTime,
 };
 
 export default actions;
