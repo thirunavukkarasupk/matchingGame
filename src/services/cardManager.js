@@ -1,35 +1,58 @@
-import { rndString } from '@laufire/utils/random';
-
-const two = 2;
-
 const cardManager = {
-	openCard: ({ state: { cards }, data }) =>
+	openedCards: ({ state: { cards }}) => cards.filter((card) =>
+		card.isOpen && !card.isDisabled),
+
+	isMatchPossible: (context) =>
+		cardManager.openedCards(context).length === 1,
+
+	firstCard: ({ data, state: { cards }}) =>
 		cards.map((card) => (card.id === data.id
-			? { ...data, isOpen: true, isDisabled: true }
+			? { ...data, isOpen: true }
 			: card)),
 
-	selectCard: ({ state: { selectedCards }, data }) =>
-		[...selectedCards, data],
+	matchedCards: ({ data, state: { cards }}) =>
+		cards.map((card) => (card.name === data.name
+			? { ...card, isOpen: true, isDisabled: true }
+			: card)),
+
+	unmatchedCards: (context) => {
+		const { data, state: { cards }} = context;
+		const [cardOne] = cardManager.openedCards(context);
+
+		return cards.map((card) =>
+			(card.name === data.name || card.name === cardOne.name
+				? { ...card, isOpen: false }
+				: card));
+	},
+
+	openCard: (context) => {
+		const { length: openedCardCount } = cardManager.openedCards(context);
+
+		return openedCardCount < 1
+			? cardManager.firstCard(context)
+			: cardManager.isMatch(context)
+				? cardManager.matchedCards(context)
+				: cardManager.unmatchedCards(context);
+	},
 
 	getCard: ({ config: { backImage }, data: { isOpen, image }}) =>
 		(isOpen ? image : backImage),
 
-	isMatchPossible: ({ state: { selectedCards }}) =>
-		selectedCards.length % two === 0,
+	isMatch: (context) => {
+		const { data: { name }} = context;
+		const [cardOne] = cardManager.openedCards(context);
+		const { length: openedCardCount } = cardManager.openedCards(context);
 
-	isMatch: ({ state: { selectedCards }}) => {
-		const [cardOne,
-			cardTwo = { name: 'default', id: rndString() }] = selectedCards;
-
-		return cardOne.name === cardTwo.name;
+		return openedCardCount === 1 && cardOne.name === name;
 	},
 
 	getPoints: (context) => {
-		const { state: { selectedCards }, config: { cardScore }} = context;
-		const [{ name: cardName }] = selectedCards;
+		const { config: { cardScore }} = context;
+		const [cardOne = { name: 'default' }]
+		= cardManager.openedCards(context);
 
 		return cardManager.isMatch(context)
-			? cardScore[cardName]
+			? cardScore[cardOne.name]
 			: 0;
 	},
 
@@ -39,37 +62,16 @@ const cardManager = {
 		return score + cardManager.getPoints(context);
 	},
 
+	areConditionsSatisfied: (context) =>
+		(!cardManager.isMatchPossible(context)
+	|| cardManager.isMatch(context)
+			? 0
+			: 1),
+
 	computeLife: (context) => {
 		const { state: { life }} = context;
 
-		return !cardManager.isPossible(context)
-			? life
-			: cardManager.isMatch(context)
-				? life
-				: life - 1;
-	},
-
-	manageCards: (context) => {
-		const { state: { cards, selectedCards }} = context;
-		const [cardOne,
-			cardTwo = { id: rndString(), name: 'default' }] = selectedCards;
-
-		return !cardManager.isMatchPossible(context)
-			? cards
-			: cardManager.isMatch(context)
-				? cards
-				: cards.map((card) => (card.id === cardOne.id
-					|| card.id === cardTwo.id
-					? { ...card, isOpen: false, isDisabled: false }
-					: card));
-	},
-
-	manageSelectedCards: (context) => {
-		const { state: { selectedCards }} = context;
-
-		return cardManager.isMatchPossible(context)
-			? []
-			: selectedCards;
+		return life - cardManager.areConditionsSatisfied(context);
 	},
 
 	isAllDisabled: ({ state: { cards }}) =>

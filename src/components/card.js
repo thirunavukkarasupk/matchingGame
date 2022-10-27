@@ -9,10 +9,6 @@ const Card = (context) => {
 			disabled={ data.isDisabled }
 			onClick={ () => {
 				actions.openCard(data);
-				actions.selectCard(data);
-				actions.computeScore();
-				actions.computeLife();
-				actions.manageCards(data);
 			} }
 		>{cardManager.getCard(context)}
 		</button>);
