@@ -31,8 +31,7 @@ const seed = {
 		isOpen: false,
 		isDisabled: false,
 	}],
-	time: 10,
-	selectedCards: [],
+	time: 300,
 };
 
 export default seed;
