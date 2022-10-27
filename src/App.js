@@ -4,7 +4,7 @@ import Game from './components/game';
 import Ticker from './services/ticker.js';
 
 const App = (context) => {
-	useEffect(Ticker.start, []);
+	useEffect(() => Ticker.start(context), []);
 
 	return	(
 		<div className="App" role="App">

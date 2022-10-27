@@ -1,6 +1,5 @@
-import context from '../core/context';
 
-const start = () => {
+const start = (context) => {
 	const { config: { tickerDelay }, actions } = context;
 
 	setInterval(actions.manageTime, tickerDelay);
